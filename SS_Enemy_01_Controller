@@ -2,20 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy_01_Controller : MonoBehaviour
+public class Enemy_01_Controller : Enemies
 {
     private Rigidbody2D rb2d;
-    [SerializeField] private float speed = 3f;
 
-    [Header("Shot Variables")]
-    [SerializeField] private GameObject shot;
+    [Header("Shot Variables")]    
     [SerializeField] private Transform firePoint;
-    private float waitTime;
-
-    [SerializeField] private int health;
-
-    [SerializeField] private GameObject destroyEffect;
-     
+    
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +21,11 @@ public class Enemy_01_Controller : MonoBehaviour
 
     // Update is called once per frame
     void Update()
+    {
+        Shot();
+    }
+
+    private void Shot()
     {
         bool visible = GetComponentInChildren<SpriteRenderer>().isVisible;
 
@@ -42,17 +40,6 @@ public class Enemy_01_Controller : MonoBehaviour
             }
 
         }
-        
-    }
-
-    public void EnemyDamage(int damage)
-    { 
-        health -= damage;
-
-        if (health <= 0)
-        {
-            Instantiate(destroyEffect, transform.position, transform.rotation);
-            Destroy(gameObject);
-        }
     }
 }
+    

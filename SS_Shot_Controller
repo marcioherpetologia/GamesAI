@@ -2,57 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Enemy_01_Controller : MonoBehaviour
+public class ShotController : MonoBehaviour
 {
     private Rigidbody2D rb2d;
-    [SerializeField] private float speed = 3f;
+    [SerializeField] private float speed;
 
-    [Header("Shot Variables")]
-    [SerializeField] private GameObject shot;
-    [SerializeField] private Transform firePoint;
-    private float waitTime;
-
-    [SerializeField] private int health;
-
-    [SerializeField] private GameObject destroyEffect;
-     
+    [SerializeField] private GameObject shotImpact;
 
     // Start is called before the first frame update
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
-        rb2d.velocity = new Vector2(0f, -speed);
-
-        waitTime = Random.Range(0.5f, 2f);
+        rb2d.velocity = new Vector2(0f, speed);
     }
 
     // Update is called once per frame
     void Update()
     {
-        bool visible = GetComponentInChildren<SpriteRenderer>().isVisible;
-
-        if (visible)
-        {
-            waitTime -= Time.deltaTime;
-
-            if (waitTime <= 0)
-            {
-                Instantiate(shot, firePoint.position, firePoint.rotation);
-                waitTime = Random.Range(1.5f, 2f);
-            }
-
-        }
         
     }
 
-    public void EnemyDamage(int damage)
-    { 
-        health -= damage;
-
-        if (health <= 0)
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Enemy"))
         {
-            Instantiate(destroyEffect, transform.position, transform.rotation);
-            Destroy(gameObject);
+            other.GetComponent<Enemies>().EnemyDamage(1);           
         }
+
+        if (other.CompareTag("Player"))
+        { 
+            other.GetComponent<PlayerController>().PlayerDamage(1);
+        }
+
+        Destroy(gameObject);
+        Instantiate(shotImpact, transform.position, transform.rotation);
     }
 }

@@ -9,6 +9,7 @@ public class Enemies : MonoBehaviour
     [SerializeField] protected GameObject explosionEffect;
     [SerializeField] protected float waitTime;
     [SerializeField] protected GameObject shot;
+    [SerializeField] protected float shotSpeed;
 
 
     // Start is called before the first frame update

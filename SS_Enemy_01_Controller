@@ -35,7 +35,9 @@ public class Enemy_01_Controller : Enemies
 
             if (waitTime <= 0)
             {
-                Instantiate(shot, firePoint.position, firePoint.rotation);
+                var shotInst = Instantiate(shot, firePoint.position, firePoint.rotation);
+                shotInst.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, -shotSpeed);
+
                 waitTime = Random.Range(1.5f, 2f);
             }
 

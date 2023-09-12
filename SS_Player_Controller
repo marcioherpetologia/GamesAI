@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform firePointLeft;
     [SerializeField] private Transform firePointRight;
     [SerializeField] private bool isPowerUp;
+    [SerializeField] private float shotSpeed;
 
     [SerializeField] private int playerHealth;
 
@@ -30,16 +31,12 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Pegando os inputs
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
+        Movement();
+        ShotPlayer();
+    }
 
-        Vector2 shipVel = new Vector2(horizontal, vertical);
-
-        shipVel.Normalize();
-
-        rb2d.velocity = shipVel * speed;
-
+    private void ShotPlayer()
+    {
         shotTimer -= Time.deltaTime;
 
         if (Input.GetKey(KeyCode.Space) && shotTimer <= 0)
@@ -50,15 +47,27 @@ public class PlayerController : MonoBehaviour
                 Instantiate(playerShot, firePointMiddle.position, firePointMiddle.rotation);
                 Instantiate(playerShot, firePointRight.position, firePointRight.rotation);
             }
-            else 
+            else
             {
-                Instantiate(playerShot, firePointMiddle.position, firePointMiddle.rotation);
+               var shot = Instantiate(playerShot, firePointMiddle.position, firePointMiddle.rotation);
+               shot.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, shotSpeed); 
             }
-            
+
             shotTimer = shotCount;
         }
+    }
 
+    private void Movement()
+    {
+        //Pegando os inputs
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
 
+        Vector2 shipVel = new Vector2(horizontal, vertical);
+
+        shipVel.Normalize();
+
+        rb2d.velocity = shipVel * speed;
     }
 
     public void PlayerDamage(int damage)

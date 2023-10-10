@@ -10,6 +10,7 @@ public class Enemies : MonoBehaviour
     [SerializeField] protected float waitTime;
     [SerializeField] protected GameObject shot;
     [SerializeField] protected float shotSpeed;
+    [SerializeField] protected int pointsByEnemy;
 
 
     // Start is called before the first frame update
@@ -25,13 +26,19 @@ public class Enemies : MonoBehaviour
     }
 
     public void EnemyDamage(int damage)
-    { 
-        enemyHealth -= damage;
-        if (enemyHealth <= 0) 
+    {
+        if (transform.position.y < 5f)
         {
-            Instantiate(explosionEffect, transform.position, transform.rotation);
-            Destroy(gameObject);
+            enemyHealth -= damage;
+            if (enemyHealth <= 0)
+            {
+                Instantiate(explosionEffect, transform.position, transform.rotation);
+                Destroy(gameObject);
+
+                FindObjectOfType<EnemySpawner>().PointsToGive(pointsByEnemy);
+            }
         }
+        
     }
 
     private void OnTriggerEnter2D(Collider2D other)

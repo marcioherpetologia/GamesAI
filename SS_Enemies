@@ -35,7 +35,10 @@ public class Enemies : MonoBehaviour
                 Instantiate(explosionEffect, transform.position, transform.rotation);
                 Destroy(gameObject);
 
-                FindObjectOfType<EnemySpawner>().PointsToGive(pointsByEnemy);
+                var generator = FindAnyObjectByType<EnemySpawner>();
+                generator.ReduceEnemiesQtd();
+                generator.PointsToGive(pointsByEnemy);
+                
             }
         }
         
@@ -44,8 +47,9 @@ public class Enemies : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Destroyer"))
-        { 
-            Destroy(gameObject);
+        {
+            var generator = FindAnyObjectByType<EnemySpawner>();
+            generator.ReduceEnemiesQtd();
         }
     }
 

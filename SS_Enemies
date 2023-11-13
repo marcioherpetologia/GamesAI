@@ -50,6 +50,7 @@ public class Enemies : MonoBehaviour
         {
             var generator = FindAnyObjectByType<EnemySpawner>();
             generator.ReduceEnemiesQtd();
+            Destroy(gameObject);
         }
     }
 
@@ -61,6 +62,7 @@ public class Enemies : MonoBehaviour
             Destroy(gameObject);
             other.gameObject.GetComponent<PlayerController>().PlayerDamage(1);
         }
+
         
     }
 }

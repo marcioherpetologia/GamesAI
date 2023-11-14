@@ -1,0 +1,72 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using Unity.VisualScripting;
+using UnityEngine;
+
+public class BossController : Enemies
+{
+    [SerializeField] private string state = "state01";
+    //[SerializeField] private float bossSpeed = 2f;
+    [SerializeField] private Rigidbody2D rb2d;
+    [SerializeField] private bool toTheRight;
+    [SerializeField] private float xOffset;
+
+    [Header("Shots and Points")]
+    [SerializeField] private GameObject shotOnePrefab;
+    [SerializeField] private GameObject shotTwoPrefab;
+    [SerializeField] private Transform shotPointLeft;
+    [SerializeField] private Transform shotPointRight;
+    [SerializeField] private Transform shotPointMiddle;
+
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        rb2d = GetComponent<Rigidbody2D>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        switch (state)
+        {
+            case "state01":
+                State01();
+                break;
+        
+        
+        }
+    }
+
+    private void State01()
+    {
+        if (toTheRight)
+        {
+            rb2d.velocity = new Vector2(speed, 0f);
+        }
+        else        
+        { 
+            rb2d.velocity = new Vector2(-speed, 0f);
+        }
+
+        if (transform.position.x >= xOffset)
+        {
+            toTheRight = false;
+        }
+        else if (transform.position.x <= -xOffset)
+        { 
+            toTheRight = true;
+        }
+
+    }
+
+    private void ShotOne()
+    {
+        GameObject shot = Instantiate(shotOnePrefab, shotPointLeft.position, shotPointLeft.rotation);
+        shot.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, -shotSpeed);
+
+        shot = Instantiate(shotOnePrefab, shotPointRight.position, shotPointRight.rotation);
+        shot.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, -shotSpeed);
+    }
+}

@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class BossController : Enemies
 {
@@ -18,6 +20,13 @@ public class BossController : Enemies
     [SerializeField] private Transform shotPointLeft;
     [SerializeField] private Transform shotPointRight;
     [SerializeField] private Transform shotPointMiddle;
+    [SerializeField] private float waitToShot = 2f;
+    [SerializeField] private float waitToShotTwo = 1.5f;
+    [SerializeField] private float chargeTime = 2f;
+
+    [Header("Possibles IAs States")]
+    [SerializeField] private string[] possiblesStates;
+    [SerializeField] private float waitToChangeState = 10f; 
 
 
     // Start is called before the first frame update
@@ -34,29 +43,64 @@ public class BossController : Enemies
             case "state01":
                 State01();
                 break;
-        
-        
+
+            case "state02":
+                State02();
+                break;
+
+            case "state03":
+                State03();
+                break;        
         }
+
+        ChangeState();
+        MoveOnScreen();
+    }
+
+
+    private void State03()
+    {
+        if (waitToShot <= 0f)
+        {
+            ShotOne();
+            waitToShot = chargeTime;
+        }
+
+        if (waitToShotTwo <= 0f)
+        {
+            ShotTwo();
+            waitToShotTwo = chargeTime / 2;
+        }
+        else 
+        {
+            waitToShot -= Time.deltaTime;
+            waitToShotTwo -= Time.deltaTime;
+        }
+    }
+
+    private void State02()
+    {
+        if (waitToShot <= 0)
+        {
+            ShotTwo();
+            waitToShot = chargeTime / 2f;
+        }
+        else 
+        {
+            waitToShot -= Time.deltaTime;
+        }      
     }
 
     private void State01()
     {
-        if (toTheRight)
+        if (waitToShot <= 0)
         {
-            rb2d.velocity = new Vector2(speed, 0f);
+            ShotOne();
+            waitToShot = chargeTime;
         }
-        else        
-        { 
-            rb2d.velocity = new Vector2(-speed, 0f);
-        }
-
-        if (transform.position.x >= xOffset)
+        else 
         {
-            toTheRight = false;
-        }
-        else if (transform.position.x <= -xOffset)
-        { 
-            toTheRight = true;
+            waitToShot -= Time.deltaTime;
         }
 
     }
@@ -68,5 +112,57 @@ public class BossController : Enemies
 
         shot = Instantiate(shotOnePrefab, shotPointRight.position, shotPointRight.rotation);
         shot.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, -shotSpeed);
+    }
+
+    private void ShotTwo()
+    {
+        var player = FindObjectOfType<PlayerController>();
+
+        if(player != null)
+        {
+            var shotInst = Instantiate(shotTwoPrefab, shotPointMiddle.position, shotPointMiddle.rotation);
+
+            Vector2 direction = (player.transform.position - shotInst.transform.position).normalized;
+
+            shotInst.GetComponent<Rigidbody2D>().velocity = direction * shotSpeed;
+        }
+    
+    }
+
+    private void ChangeState()
+    {
+        if (waitToChangeState <= 0)
+        {
+            int stateIndex = Random.Range(0, possiblesStates.Length);
+            state = possiblesStates[stateIndex];
+            waitToChangeState = chargeTime;
+        }
+        else 
+        {
+            waitToChangeState -= Time.deltaTime;
+        }
+
+    }
+
+    private void MoveOnScreen()
+    {
+
+        if (toTheRight)
+        {
+            rb2d.velocity = new Vector2(speed, 0f);
+        }
+        else
+        {
+            rb2d.velocity = new Vector2(-speed, 0f);
+        }
+
+        if (transform.position.x >= xOffset)
+        {
+            toTheRight = false;
+        }
+        else if (transform.position.x <= -xOffset)
+        {
+            toTheRight = true;
+        }
     }
 }
